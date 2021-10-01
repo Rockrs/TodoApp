@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100&display=swap" rel="stylesheet">
+    <title>Multipurpose Personal App</title>
+</head>
+<body>
+    <h1>TODO Personal App</h1>
+    <div class="flex-container">
+        <div class="todo-div">
+            <!-- <input type='text' id='add-task' placeholder="Add TODO Task"> -->
+            <div id="task-add">
+                <button id='task-add-btn' class="btn">Add Tasks</button>
+            </div>
+            <!-- <input type='text' id='search-tasks' placeholder="Enter Task Description"> -->
+            <!-- <input type="text", id ='search-tasks', placeholder="Status True/False"> -->
+            <div id="task-delete">
+                <button id='task-delete-btn' class="btn" disabled>Delete Task</button>
+            </div>
+            <div id="task-pending">
+                <button id='task-pending-btn' class="btn">Get Pending Tasks</button>
+            </div>
+            <div id="task-search">
+                <button id='task-search-btn' class="btn">Search Tasks</button>
+            </div>
+        </div>
+        <div class="display-result-div">
+        </div>
+    </div>
+    <script src="{{ url_for('static',filename='app.js') }}"> </script>
+</body>
+</html>
