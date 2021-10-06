@@ -11,5 +11,10 @@ class MongoCollections:
     @classmethod
     def get_pending_task_collection(cls):
         return cls.get_db_object()['pending_collection']
+    
+    @classmethod
+    def get_completed_task_collection(cls):
+        return cls.get_db_object()['completed_collection']
         
 PENDING_COLLECTION = MongoCollections.get_pending_task_collection()
+COMPLETED_COLLECTION = MongoCollections.get_completed_task_collection()

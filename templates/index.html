@@ -5,32 +5,34 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" integrity="sha512-YWzhKL2whUzgiheMoBFwW8CKV4qpHQAEuvilg9FAn5VJUDwKZZxkJNuGM4XkWuk94WCrrwslk8yWNGmY1EduTA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100&display=swap" rel="stylesheet">
     <title>Multipurpose Personal App</title>
 </head>
 <body>
-    <h1>TODO Personal App</h1>
-    <div class="flex-container">
-        <div class="todo-div">
-            <!-- <input type='text' id='add-task' placeholder="Add TODO Task"> -->
-            <div id="task-add">
-                <button id='task-add-btn' class="btn">Add Tasks</button>
-            </div>
-            <!-- <input type='text' id='search-tasks' placeholder="Enter Task Description"> -->
-            <!-- <input type="text", id ='search-tasks', placeholder="Status True/False"> -->
-            <div id="task-delete">
-                <button id='task-delete-btn' class="btn" disabled>Delete Task</button>
-            </div>
-            <div id="task-pending">
-                <button id='task-pending-btn' class="btn">Get Pending Tasks</button>
-            </div>
-            <div id="task-search">
-                <button id='task-search-btn' class="btn">Search Tasks</button>
-            </div>
+    <header>
+        <h1>Remember Tasks With To-do App</h1>
+    </header>
+    <form >
+        <input type="text" id="inpu1-1", class="input">
+        <button class="btn" type="submit">
+            <i class="fas fa-plus-square"></i>
+        </button>
+        <div class="select">
+            <select name="todos" class="filter-todo">
+                <option value="all">All</option>
+                <option value="completed">Completed</option>
+                <option value="pending">Pending</option>
+            </select>
         </div>
-        <div class="display-result-div">
-        </div>
+    </form>
+    <div class="container">
+        <ul class="ul-list">
+        </ul>
     </div>
     <script src="{{ url_for('static',filename='app.js') }}"> </script>
+    <script src="{{ url_for('static',filename='fetch-api-get.js') }}"> </script>
+    <script src="{{ url_for('static',filename='fetch-api-post.js') }}"> </script>
+    <script src="{{ url_for('static',filename='add-task-ui.js') }}"> </script>
 </body>
 </html>

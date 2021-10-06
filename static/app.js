@@ -1,104 +1,106 @@
-const removeAllChildNodes = parent=> {
-    if (parent === null){
-        return;
-    }
+//Selectors
+const todoInput = document.querySelector('.input');
+const todoButton = document.querySelector('.btn');
+const todoUl = document.querySelector('.ul-list');
+const todoSelect = document.querySelector('.select')
 
-    children  = parent.childNodes;
-    children.forEach(child=>{
-        removeAllChildNodes(child);
-    });
+//Event Listeners
+todoButton.addEventListener('click', addTaskFromInputTag);
+todoUl.addEventListener('click', deleteCheckTask);
+todoSelect.addEventListener('click', getTaskfromBackendAndDisplay);
 
-    parent.remove();
-}
+//functions
 
-const clearOutputWindow = ()=>{
-    const collection = document.querySelector('.display-result-div').childNodes;
-    if (collection.length>0){
-        collection.forEach(item=>{
-            removeAllChildNodes(item);
-        });
-    }
-}
+//Add task to the UI and backend
+function addTaskFromInputTag(event){
+    event.preventDefault();
+    taskToAdd = todoInput.value;
 
-// Fetch list of Pending Tasks
-const list = document.getElementById('task-pending-btn').addEventListener('click', (event)=>{
-    clearOutputWindow();
-    document.getElementById('task-delete-btn').disabled = false;  
+    //Find if Task to add is already present in backend
+    fetchPost('/search_task', taskToAdd).then(response=>{
+        return response.json()
+    }).then(data =>{
+        // If Task to add is a new task then add to backend and display in UI
 
-    const ul = document.createElement('ul');
-    fetch(`${window.origin}/get-pending-task`,{
-        method : 'GET',        
-    }).then(response=>
-        response.json()
-    ).then(data=>{
-        const tasks = data['data'];
-        tasks.forEach(element => {
-            const li = document.createElement('li');
-            const checkbox = document.createElement('input');
+        if (data['message'] !== 'Task Already Present'){
+            //Adding Task in UI
+            addTaskUI( todoInput, todoUl);
 
-            checkbox.setAttribute('type', 'checkbox')
-            checkbox.setAttribute('class', 'task-checkbox')
-            li.innerHTML = element;
-
-            li.appendChild(checkbox);
-            ul.appendChild(li);
-        });
-
-        document.querySelector('.display-result-div').appendChild(ul);  
-    }).catch(error=>{
-        alert(error);
-    });
-});
-
-// Add tasks to my todo list
-const add = document.getElementById('task-add-btn').addEventListener('click', (event)=>{
-    clearOutputWindow();
-    document.getElementById('task-delete-btn').disabled = true;
-
-    input = document.createElement('input');
-    input.setAttribute('placeholder', 'Add Task Desc');
-    
-    document.querySelector('.display-result-div').appendChild(input);
-    input.addEventListener('change', (event)=>{
-        fetch(`${window.origin}/add_task`, {
-            method : "POST",
-            credentials : 'include',
-            body : JSON.stringify(event.target.value),
-            cache : 'no-cache',
-            headers : new Headers({
-                'content-type' : 'application/json'
-            })
-        }).then(response => response.status).then(status =>{
-            alert("Task Added Successfully");
-        }).catch(error=>{
-            alert(error);
-        });
-    });
-    });
-
-// Delete Tasks
-const del = document.getElementById('task-delete-btn').addEventListener('click', (event)=>{
-    const allTasks = Array.from(document.querySelectorAll('.display-result-div > ul > li'));
-    const taskTODelete = allTasks.filter((task)=>{
-        if (task.children[0].checked === true){
-            return true;
+            //Add task to backend
+            fetchPost("add_task", taskToAdd).then(response=>{
+                return response.status;
+            }).then(status=>{
+                console.log(status);
+            });
+        }else{
+            alert("Task Is already Present in Your to-do List")
         }
-    }).reduce((previousValue, currentValue)=>{
-        return previousValue.concat(currentValue.innerText);
-    }, [])
-    
-    fetch(`${window.origin}/delete_task`, {
-        method : 'POST',
-        credentials : 'include',
-        cache : 'no-cache',
-        body : JSON.stringify(taskTODelete),
-        headers : new Headers({
-          'content-type' : 'application/json' 
-        })
-    }).then(response => response.status).then(status => {
-        alert(`Task Deletion Successfull with ${status}`);
-        document.getElementById('task-pending-btn').click();
     }).catch(error=>{
         console.log(error);
     })
-})
+}
+
+//Fetch Task from Backend and add in UI
+function getTaskfromBackendAndDisplay(event){
+    todoUl.innerHTML = '';
+
+    if (event.target.value === 'pending'){
+        fetchGet('get_pending_task').then(tasks=>{
+            tasks['data'].forEach(element => {
+                addTaskUI(todoInput, todoUl, element)
+            });
+        });
+    }else if(event.target.value === 'completed'){
+        fetchGet('get_completed_task').then(tasks=>{
+            tasks['data'].forEach(element => {
+                addTaskUI(todoInput, todoUl, element)
+            });
+        });
+    }else{
+        fetchGet('get_pending_task').then(tasks=>{
+            tasks['data'].forEach(element => {
+                addTaskUI(todoInput, todoUl, element)
+            });
+        });
+        fetchGet('get_completed_task').then(tasks=>{
+            tasks['data'].forEach(element => {
+                addTaskUI(todoInput, todoUl, element)
+            });
+        });
+    }
+}
+
+
+//Delete-Check Task
+function deleteCheckTask(event){
+    const parent = event.target.parentElement;
+
+    //Delete
+    if (event.target.classList[0] === 'trash-btn'){
+        
+        //Delete animation
+        parent.classList.toggle("fall");
+        parent.addEventListener('transitionend', function(){
+            parent.remove();
+        })
+
+        //Delete Task from Backend
+        fetchPost('delete_task', parent.firstChild.innerText).then(response=>{
+            return response.status;
+        }).then(status=>{
+            console.log(status);
+        });
+    }
+
+    //Check Mark
+    if(event.target.classList[0] === 'complete-btn'){
+        parent.classList.toggle('completed-div');
+
+        //Add to Completed List
+        fetchPost('complete_task', parent.firstChild.innerText).then(response=>{
+            return response.status;
+        }).then(status=>{
+            console.log(status);
+        });
+    }
+}
